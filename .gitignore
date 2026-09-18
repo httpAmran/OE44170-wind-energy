@@ -23,5 +23,6 @@ Thumbs.db
 .idea/
 
 # Large / raw downloaded datasets (keep out of git, see data/wind/README.md)
-data/wind/raw/
+data/wind/*
+!data/wind/README.md
 *.nc

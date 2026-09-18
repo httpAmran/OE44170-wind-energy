@@ -9,21 +9,12 @@ and intercept.
 import numpy as np
 
 
-def empirical_cdf(wind_speeds, bin_width=1.0):
-    """Bin wind speeds and return bin-center wind speeds with cumulative
-    probability F(v) evaluated at the right edge of each bin.
-    """
-    wind_speeds = np.asarray(wind_speeds)
-    edges = np.arange(0, wind_speeds.max() + bin_width, bin_width)
-    counts, edges = np.histogram(wind_speeds, bins=edges)
-    cumulative = np.cumsum(counts) / counts.sum()
-    v = edges[1:]  # right edge of each bin
-    return v, cumulative
-
-
-def fit_weibull_lsq(wind_speeds, bin_width=1.0):
+def fit_weibull_lsq(wind_speeds):
     """Estimate Weibull shape (k) and scale (c) parameters using the
-    graphical method of least squares (double-log linearization).
+    graphical method of least squares (Appendix 1): sort the data, assign
+    each point an empirical CDF via the Weibull plotting position
+    F_i = i / (n + 1), then fit a straight line to the double-log-transformed
+    data.
 
     Returns
     -------
@@ -31,16 +22,14 @@ def fit_weibull_lsq(wind_speeds, bin_width=1.0):
         determination, and the transformed (x, y) points used in the fit
         (useful for plotting the linear regression).
     """
-    v, F = empirical_cdf(wind_speeds, bin_width=bin_width)
-
-    # F must be strictly between 0 and 1 for the log transform to be defined
-    mask = (F > 0) & (F < 1) & (v > 0)
-    v, F = v[mask], F[mask]
+    v = np.sort(np.asarray(wind_speeds, dtype=float))
+    n = len(v)
+    i = np.arange(1, n + 1)
+    F = i / (n + 1)
 
     x = np.log(v)
     y = np.log(-np.log(1 - F))
 
-    n = len(x)
     a = (n * np.sum(x * y) - np.sum(x) * np.sum(y)) / (n * np.sum(x**2) - np.sum(x) ** 2)
     b = (np.sum(y) * np.sum(x**2) - np.sum(x) * np.sum(x * y)) / (n * np.sum(x**2) - np.sum(x) ** 2)
 
