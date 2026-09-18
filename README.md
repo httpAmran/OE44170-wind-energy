@@ -10,7 +10,9 @@ assignment1/            # this assignment's notebooks + PDF + checklist
     part1_wind_resource.ipynb
     part2_energy_production.ipynb
     part3_turbine_technology.ipynb
-assignment2/ .. 4/       # added as they're released
+assignment2/              # tidal energy
+assignment3/              # electrical aspects
+assignment4/              # wave energy
 src/windtools/            # shared Python code used across notebooks (weibull fit,
                            # log-law wind profile, power curves, Jensen wake model,
                            # rotor Cp/lambda curves)
