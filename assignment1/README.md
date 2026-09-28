@@ -3,8 +3,12 @@
 Full task text: [Wind_energy_assignment_2026.pdf](Wind_energy_assignment_2026.pdf)
 
 Notebooks live in [`notebooks/`](notebooks/) and import shared logic from the
-`windtools` package in [`/src/windtools`](../src/windtools) — see the top-level
-[README](../README.md) for setup.
+`windtools` package in [`src/windtools`](src/windtools) — kept local to this
+folder (not a repo-wide `src/`) so this whole `assignment1/` directory is
+self-contained: zip it up on its own and the notebooks still run, no other
+part of the repo required. Wind speed data lives in
+[`data/wind/`](data/wind/) (not committed — see its README to re-download),
+turbine power curves in [`data/turbines/`](data/turbines/).
 
 ## Checklist
 

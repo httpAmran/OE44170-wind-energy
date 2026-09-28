@@ -22,7 +22,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Large / raw downloaded datasets (keep out of git, see data/wind/README.md)
-data/wind/*
-!data/wind/README.md
+# Large / raw downloaded datasets (keep out of git, see assignment1/data/wind/README.md)
+assignment1/data/wind/*
+!assignment1/data/wind/README.md
 *.nc
