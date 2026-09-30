@@ -1,12 +1,4 @@
-"""Harmonic superposition of tidal constituents (Part 1a, Appendix 1).
-
-The tidal current is written as a sum of harmonic constituents:
-
-    U(t) = sum_i U_A,i * cos(2*pi*t / T_A,i + phi_A,i)
-
-and the beat between two constituents of slightly different period sets the
-modulation period (e.g. the spring-neap cycle, from the M2-S2 beat).
-"""
+"""Harmonic superposition of tidal constituents."""
 
 import numpy as np
 
@@ -14,17 +6,9 @@ KNOT = 0.514444  # m/s per knot
 
 
 def superpose_constituents(t, constituents, phases=None):
-    """Superpose harmonic constituents into a time series U(t).
+    """U(t) = sum of amp * cos(2*pi*t/period + phase) over the constituents.
 
-    Parameters
-    ----------
-    t : array-like, time [h]
-    constituents : dict of name -> (amplitude [m/s], period [h])
-    phases : optional dict of name -> phase [rad], default 0 for all
-
-    Returns
-    -------
-    U : ndarray, superposed signal at each t
+    t in hours, constituents as {name: (amplitude, period [h])}.
     """
     t = np.asarray(t, dtype=float)
     U = np.zeros_like(t)
@@ -35,19 +19,12 @@ def superpose_constituents(t, constituents, phases=None):
 
 
 def beat_period(period_a, period_b):
-    """Beat (modulation) period between two constituents of periods
-    period_a, period_b, e.g. the M2-S2 spring-neap beat.
-    """
+    """Beat period between two constituents, e.g. M2-S2 gives spring-neap."""
     return 1.0 / (1.0 / period_b - 1.0 / period_a)
 
 
 def local_extrema(x, kind="max"):
-    """Indices of strict interior local extrema of a 1-D array.
-
-    kind="max" finds local maxima, kind="min" finds local minima. Used to
-    pick out envelope peaks of a current-speed series, or high/low waters
-    of a tidal elevation series.
-    """
+    """Indices of the interior local maxima ("max") or minima ("min") of x."""
     x = np.asarray(x, dtype=float)
     if kind == "max":
         is_ext = (x[1:-1] >= x[:-2]) & (x[1:-1] > x[2:])

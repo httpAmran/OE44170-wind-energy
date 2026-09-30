@@ -1,21 +1,9 @@
-"""0-D model of a one-way ebb-generation tidal range power plant (Part 2,
-Appendix 2), with a variable basin area A(Z).
-
-Mass balance, discretised with a backward difference scheme:
-
-    Z[i+1] = Z[i] + Q[i] / A(Z[i]) * dt
-
-Operating modes cycle FILL -> HOLD_HW -> GEN -> HOLD_LW -> FILL:
-  FILL    : sea rising above the held basin level; sluices + turbine
-            passages open, water flows in via the orifice equation.
-  HOLD_HW : basin held near high water while the sea falls, until H >= Hse.
-  GEN     : turbines generate while H = Z - Y is between Hee and Hse.
-  HOLD_LW : basin held near low water (head too small to generate) until
-            the sea rises back above the basin (H < 0).
-"""
+"""0-D model of a one-way ebb-generation tidal range scheme (Appendix 2)."""
 
 import numpy as np
 from scipy.integrate import quad
+
+from .harmonics import local_extrema
 
 FILL, HOLD_HW, GEN, HOLD_LW = 1, 2, 3, 4
 MODE_NAMES = {
@@ -27,32 +15,23 @@ MODE_NAMES = {
 
 
 def basin_area(z, coeffs=(-264.55, -3835.98, -59920.6, 554761.9, 1.1e7)):
-    """Basin area A(Z) [m^2] as a quartic polynomial in water level Z [m]."""
+    """Basin area [m2] as a quartic in the basin water level z [m]."""
     return np.polyval(coeffs, z)
 
 
 def tidal_energy_potential(range_m, area, rho=1025.0, g=9.81):
-    """Maximum energy [J] available from one tide of range `range_m` [m]
-    trapped over a constant basin area [m^2]: E = rho * g * A * R^2 / 2.
-    """
+    """E = rho*g*A*R^2/2 [J], for a tide of range R over a constant area."""
     return rho * g * area * range_m**2 / 2
 
 
 def tidal_energy_potential_variable_area(z_lo, z_hi, area_func, rho=1025.0, g=9.81):
-    """Energy [J] released lowering the basin from z_hi to z_lo, accounting
-    for the basin area changing with level: E = rho*g* int_(z_lo)^(z_hi) A(z)*(z - z_lo) dz.
-    """
+    """Same, but integrated over a basin area that varies with level."""
     value, _ = quad(lambda z: area_func(z) * (z - z_lo), z_lo, z_hi)
     return rho * g * value
 
 
 def ebb_ranges(t, y):
-    """Tidal range of every ebb (high water -> following low water).
-
-    Returns an (n, 4) array of columns [t_hw, hw_level, lw_level, range].
-    """
-    from .harmonics import local_extrema
-
+    """Every high water and the low water after it, as [t_hw, hw, lw, range]."""
     i_hw = local_extrema(y, kind="max")
     i_lw = local_extrema(y, kind="min")
 
@@ -66,23 +45,12 @@ def ebb_ranges(t, y):
 
 def simulate_one_way_ebb(t_h, y, area_func, n_turb, q_turb, eta_t, a_fill,
                           h_se, h_ee, cd=1.0, rho=1025.0, g=9.81):
-    """Simulate a one-way ebb-generation scheme against a tidal elevation
-    series y(t) [m about MSL], sampled at constant intervals t_h [h].
+    """Run the 0-D model against a tidal elevation series y(t_h).
 
-    Parameters
-    ----------
-    area_func : callable, basin area A(Z) [m^2]
-    n_turb, q_turb : number of turbines, and (constant) flow rate per
-        turbine while generating [m^3/s]
-    eta_t : fixed turbine efficiency [-]
-    a_fill : total open area (sluices + turbine passages) while filling [m^2]
-    h_se, h_ee : head [m] at which generation starts / stops
-    cd : discharge coefficient for the filling orifice equation
-
-    Returns
-    -------
-    dict with keys Z, H, Q, Q_sl, Q_tb, P_hyd, P_el, mode (all length-n
-    arrays); Z[0] is initialised to y[0].
+    Cycles FILL -> HOLD_HW -> GEN -> HOLD_LW: the basin fills through the
+    sluices and turbine passages (total open area a_fill), is held while the
+    sea drops, generates between h_se and h_ee, then waits for the next flood.
+    Returns the level, head, flow and power series as a dict.
     """
     t_h = np.asarray(t_h, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -131,12 +99,10 @@ def simulate_one_way_ebb(t_h, y, area_func, n_turb, q_turb, eta_t, a_fill,
 
 
 def annual_energy_yield(power, dt_s, year_factor):
-    """Scale energy produced over the simulated period [W, s] to an annual
-    energy yield [J], using `year_factor` (number of such periods per year).
-    """
+    """Scale the energy over one simulated cycle to a full year [J]."""
     return year_factor * np.sum(power) * dt_s
 
 
 def capacity_factor(aey_j, installed_power_w, hours_in_year=8760):
-    """Capacity factor [-] given AEY [J] and installed power [W]."""
+    """Capacity factor from AEY [J] and installed power [W]."""
     return aey_j / (installed_power_w * hours_in_year * 3600.0)
