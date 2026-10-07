@@ -1,0 +1,59 @@
+%% =====================================================================
+%%  OE44170 Offshore Renewable Technologies – Assignment 3: Electrical Aspects
+%%  Group 21
+%%
+%%  Recommended use: copy the Overleaf project of Assignment 2 (TU Delft
+%%  report template), upload chapters/electrical.tex and figures/electrical/,
+%%  and replace \input of the tidal chapter by \input{chapters/electrical}.
+%%  Change the title/subtitle in the template's title data to
+%%  "Assignment 3" / "Electrical Aspects".
+%%
+%%  This file is only a standalone fallback that compiles the chapter with
+%%  the TU Delft class if present, otherwise with the standard report class.
+%% =====================================================================
+\IfFileExists{tudelft-report.cls}{%
+  \documentclass{tudelft-report}%
+}{%
+  \documentclass[11pt,a4paper]{report}%
+  \usepackage[a4paper,margin=2.5cm]{geometry}%
+}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+
+\title{Assignment 3}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\fontsize{40}{44}\selectfont Assignment 3\par}
+  \vspace{0.8cm}
+  {\LARGE Electrical Aspects\par}
+  \vspace{1.2cm}
+  {\small by\par}
+  \vspace{1.2cm}
+  {\LARGE Group 21\par}
+  \vspace{1.2cm}
+  \begin{tabular}{ll}
+    Ameen, Amran            & 5578620 \\
+    Chalkiadis, Theodoros   & 6537197 \\
+    Schulze, Max            & 2723314 \\
+  \end{tabular}
+  \vfill
+  \begin{flushleft}
+  \begin{tabular}{ll}
+    Instructors: & Dr.\ B.C.\ Ummels \\[4pt]
+    Faculty:     & Faculty of Mechanical Engineering, Delft \\
+  \end{tabular}
+  \end{flushleft}
+\end{titlepage}
+
+\tableofcontents
+
+\input{chapters/electrical}
+
+\end{document}
