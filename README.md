@@ -17,9 +17,9 @@ assignment1/              # wind energy — fully self-contained, see below
   Wind_energy_assignment_2026.pdf
 assignment2/              # tidal energy — fully self-contained, see below
   notebooks/
-    part1_tidal_resource.ipynb
-    part2_stream_energy.ipynb
-    part3_tidal_range.ipynb
+    part1a_tidal_resource.ipynb
+    part1b_stream_energy.ipynb
+    part2_tidal_range.ipynb
   src/tidaltools/           # assignment 2's own copy of its shared code
   Tidal_range_Dataset_2026.csv
 assignment3/              # electrical aspects
